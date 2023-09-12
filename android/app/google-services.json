@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "807190543184",
+    "project_id": "pet-pal-e8664",
+    "storage_bucket": "pet-pal-e8664.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807190543184:android:43c2847acb680c0254ca55",
+        "android_client_info": {
+          "package_name": "com.example.pet_pal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyIIcsb9ijEWCM0CrygED8Ckbie6UVryI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807190543184:android:754601ac6f8d396654ca55",
+        "android_client_info": {
+          "package_name": "com.example.petpal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyIIcsb9ijEWCM0CrygED8Ckbie6UVryI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
