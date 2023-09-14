@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:petpal/components/navbar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

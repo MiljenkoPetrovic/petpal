@@ -53,7 +53,6 @@ class _MyAppState extends State<MyApp> {
     switch (index) {
       case 0:
         return AuthPage();
-        break;
       default:
         return AuthPage();
     }
