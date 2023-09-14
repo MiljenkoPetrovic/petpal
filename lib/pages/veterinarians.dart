@@ -12,10 +12,7 @@ class Veterinarians extends StatefulWidget {
 
 class VeterinariansState extends State<Veterinarians> {
   Completer<GoogleMapController> _controller = Completer();
-  CameraPosition _kGoogle = CameraPosition(
-    target: LatLng(0, 0), // Default to (0,0).
-    zoom: 14,
-  );
+  CameraPosition _kGoogle = CameraPosition(target: LatLng(0, 0));
 
   // on below line we have created the list of markers
   final List<Marker> _markers = <Marker>[
@@ -28,7 +25,7 @@ class VeterinariansState extends State<Veterinarians> {
     ),
   ];
 
-  // updated method for getting user current location
+  // created method for getting user current location
   Future<void> getUserCurrentLocation() async {
     await Geolocator.requestPermission()
         .then((value) {})
@@ -46,7 +43,7 @@ class VeterinariansState extends State<Veterinarians> {
         zoom: 14,
       );
 
-      // Marker added for the current user's location.
+      // Marker added for current user's location.
       _markers.add(
         Marker(
           markerId: MarkerId("2"),
@@ -71,43 +68,33 @@ class VeterinariansState extends State<Veterinarians> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF0F9D58),
-        // on below line we have given title of the app
-        title: Text("GFG"),
+        // on below line we have given title of app
+        title: Text("Veterinarians"),
       ),
-      body: FutureBuilder<void>(
-        future: getUserCurrentLocation(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else {
-            return _buildGoogleMap();
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _buildGoogleMap() {
-    return Container(
-      child: SafeArea(
-        // on below line creating google maps
-        child: GoogleMap(
-          // on below line setting camera position
-          initialCameraPosition: _kGoogle,
-          // on below line we are setting markers on the map
-          markers: Set<Marker>.of(_markers),
-          // on below line specifying map type.
-          mapType: MapType.normal,
-          // on below line setting user location enabled.
-          myLocationEnabled: true,
-          // on below line setting compass enabled.
-          compassEnabled: true,
-          // on below line specifying controller on map complete.
-          onMapCreated: (GoogleMapController controller) {
-            _controller.complete(controller);
-          },
+      body: Container(
+        child: SafeArea(
+          // on below line creating google maps
+          child: GoogleMap(
+            // on below line setting camera position
+            initialCameraPosition: _kGoogle ??
+                CameraPosition(
+                  target: LatLng(0,
+                      0), // Default to (0,0) until we get the user's location.
+                  zoom: 14,
+                ),
+            // on below line we are setting markers on the map
+            markers: Set<Marker>.of(_markers),
+            // on below line specifying map type.
+            mapType: MapType.normal,
+            // on below line setting user location enabled.
+            myLocationEnabled: true,
+            // on below line setting compass enabled.
+            compassEnabled: true,
+            // on below line specifying controller on map complete.
+            onMapCreated: (GoogleMapController controller) {
+              _controller.complete(controller);
+            },
+          ),
         ),
       ),
     );

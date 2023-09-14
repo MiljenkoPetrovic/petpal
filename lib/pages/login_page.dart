@@ -71,8 +71,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,10 +84,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 50),
 
                 // logo
-                const ImageIcon(
-                  AssetImage("lib/images/logo.png"),
-                  size: 100,
-                ),
+                Image.network("https://w7.pngwing.com/pngs/548/122/png-transparent-dog-paw-cat-logo-dog-animals-poster-paw-thumbnail.png"),
 
                 const SizedBox(height: 50),
 
