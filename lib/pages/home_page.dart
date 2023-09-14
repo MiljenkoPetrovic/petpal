@@ -13,10 +13,23 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(actions: [IconButton(onPressed: signUserOut, icon: Icon(Icons.logout))
-        ],
-      ),
-      body: Center(child: Text("Logged in!")),
-    );
+        appBar: AppBar(
+          actions: [
+            IconButton(onPressed: signUserOut, icon: Icon(Icons.logout))
+          ],
+        ),
+        body: SingleChildScrollView(
+            child: Stack(
+          children: <Widget>[
+            new Container(
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage('assets//logo.png'),
+                      fit: BoxFit.cover)),
+            )
+          ],
+        )));
   }
 }
