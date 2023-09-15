@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:petpal/components/my_button.dart';
 import 'package:petpal/components/my_textfield.dart';
+import 'package:petpal/pages/home_page.dart';
 
 class LoginPage extends StatelessWidget {
   final VoidCallback onTap; // Callback to navigate to RegisterPage
@@ -18,6 +20,16 @@ class LoginPage extends StatelessWidget {
       );
       // Successful sign-in
       print("User signed in successfully.");
+
+      // Fetch and print user data from Firestore
+      await fetchAndPrintUserData(context);
+
+      // Navigate to the HomePage after successful sign-in
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => HomePage(),
+        ),
+      );
     } on FirebaseAuthException catch (e) {
       print("Sign-in error: ${e.message}");
       if (e.code == 'user-not-found') {
@@ -27,6 +39,28 @@ class LoginPage extends StatelessWidget {
       } else {
         // Handle other authentication errors
         _showErrorDialog(context, 'Sign-In Error', e.message);
+      }
+    }
+  }
+
+  Future<void> fetchAndPrintUserData(BuildContext context) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (userDoc.exists) {
+          final userData = userDoc.data();
+          print("User data from Firestore: $userData");
+        } else {
+          print("User document does not exist in Firestore.");
+        }
+      } catch (e) {
+        print("Error fetching user data: $e");
       }
     }
   }
@@ -87,9 +121,6 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue[100],
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -149,17 +180,17 @@ class LoginPage extends StatelessWidget {
                       style: TextStyle(color: Colors.grey[700]),
                     ),
                     const SizedBox(width: 4),
-                    if (onTap != null) // Check if onTap is not null
-                      GestureDetector(
-                        onTap: onTap,
-                        child: const Text(
-                          'Register now',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    // Check if onTap is not null
+                    GestureDetector(
+                      onTap: onTap,
+                      child: const Text(
+                        'Register now',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
+                    ),
                   ],
                 )
               ],

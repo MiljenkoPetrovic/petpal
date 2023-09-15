@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petpal/pages/login_or_register.dart';
-import 'package:petpal/components/navbar.dart';
+import 'package:petpal/components/navbar.dart'; // Import NavbarPage
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -15,21 +15,26 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final User? user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.lightBlueAccent,
         actions: [
           IconButton(
-            onPressed: () => signUserOut(context), // Pass the context here
+            onPressed: () => signUserOut(context),
             icon: Icon(Icons.logout),
           )
         ],
         title: Text("Home"),
       ),
       body: Center(
-        
+        child: Text(
+          "Welcome, ${user?.email ?? 'Guest'}!",
+          style: TextStyle(fontSize: 24),
+        ),
       ),
-      bottomNavigationBar: NavbarPage(),
+      bottomNavigationBar: NavbarPage(), 
     );
   }
 }

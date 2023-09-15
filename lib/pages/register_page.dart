@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 import 'package:petpal/components/my_button.dart';
 import 'package:petpal/components/my_textfield.dart';
 
@@ -16,13 +17,34 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
+  Future<void> storeUserDataInFirestore(User user) async {
+    try {
+      // Get a reference to the "users" collection and create a new document with the user's UID
+      final userDocRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+      // Set the user data in the document
+      await userDocRef.set({
+        'email': user.email,
+        // Add other user data fields as needed
+      });
+
+      // Successfully stored user data in Firestore
+      print("User data stored in Firestore.");
+    } catch (e) {
+      print("Error storing user data in Firestore: $e");
+    }
+  }
+
   Future<void> signUserUp() async {
     try {
       if (passwordController.text == confirmPasswordController.text) {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text,
           password: passwordController.text,
         );
+
+        // Call the method to store user data in Firestore
+        await storeUserDataInFirestore(userCredential.user!);
       } else {
         showErrorMessage("Passwords don't match!");
       }
@@ -59,12 +81,6 @@ class _RegisterPageState extends State<RegisterPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
-
-                // Logo
-                const ImageIcon(
-                  AssetImage("lib/images/logo.png"),
-                  size: 100,
-                ),
 
                 const SizedBox(height: 50),
 

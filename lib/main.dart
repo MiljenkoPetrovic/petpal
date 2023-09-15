@@ -5,43 +5,41 @@ import 'package:petpal/pages/alerts.dart';
 import 'package:petpal/pages/auth_page.dart';
 import 'package:petpal/pages/home_page.dart';
 import 'package:petpal/pages/login_or_register.dart';
+import 'package:petpal/pages/tracker.dart';
 import 'package:petpal/pages/veterinarians.dart';
 import 'firebase_options.dart';
-import 'package:petpal/components/navbar.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Clear the user's authentication state
+  // Initialize Firebase
   try {
-    await FirebaseAuth.instance.signOut();
-    // Proceed with any additional logic after sign-out
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   } catch (e) {
-    print("Error signing out: $e");
+    print("Error initializing Firebase: $e");
   }
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/', // Set the initial route to '/login_or_register'
+      initialRoute: '/login_or_register',
       routes: {
-        '/': (context) => AuthPage(), // Define the '/auth' route for AuthPage
-        '/home': (context) =>
-            HomePage(), // Define the '/home' route for HomePage
-        '/login_or_register': (context) =>
-            LoginOrRegisterPage(), // Define the '/login_or_register' route
-        '/alerts': (context) => AlertsPage(), // Define the '/alerts' route
-        '/veterinarians': (context) =>
-            Veterinarians(), // Define the '/beterinarians' route
+        '/': (context) => AuthPage(),
+        '/home': (context) => HomePage(),
+        '/login_or_register': (context) => LoginOrRegisterPage(),
+        '/alerts': (context) => AlertsPage(),
+        '/veterinarians': (context) => Veterinarians(),
+        '/tracker': (context) => TrackerPage(storage: _storage),
       },
     );
   }

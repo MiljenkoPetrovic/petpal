@@ -16,11 +16,31 @@ class NavbarPage extends StatelessWidget {
             gap: 8,
             padding: EdgeInsets.all(16),
             tabs: [
-              _buildTab(Icons.home, "Home", '/home', context),
-              _buildTab(Icons.add_alert, "Alerts", '/alerts', context),
-              _buildTab(Icons.add_location, "Veterinarians", '/veterinarians',
-                  context),
-            ],
+                    _buildTab(
+                      Icons.home,
+                      "Home",
+                      '/home',
+                      context,
+                    ),
+                    _buildTab(
+                      Icons.track_changes,
+                      "Tracker",
+                      '/tracker', // Specify the route for the Tracker tab
+                      context,
+                    ),
+                    _buildTab(
+                      Icons.add_alert,
+                      "Alerts",
+                      '/alerts',
+                      context,
+                    ),
+                    _buildTab(
+                      Icons.add_location,
+                      "Veterinarians",
+                      '/veterinarians',
+                      context,
+                    ),
+                  ],
           ),
         ),
       ),
@@ -34,7 +54,7 @@ class NavbarPage extends StatelessWidget {
       icon: icon,
       text: text,
       onPressed: () {
-        Navigator.of(context).pushReplacementNamed(routeName);
+        Navigator.of(context).pushNamed(routeName); // Push the specified route
       },
     );
   }
