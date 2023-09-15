@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:petpal/pages/alerts.dart';
 import 'package:petpal/pages/auth_page.dart';
 import 'package:petpal/pages/home_page.dart';
 import 'package:petpal/pages/login_or_register.dart';
+import 'package:petpal/pages/veterinarians.dart';
 import 'firebase_options.dart';
+import 'package:petpal/components/navbar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +39,9 @@ class MyApp extends StatelessWidget {
             HomePage(), // Define the '/home' route for HomePage
         '/login_or_register': (context) =>
             LoginOrRegisterPage(), // Define the '/login_or_register' route
+        '/alerts': (context) => AlertsPage(), // Define the '/alerts' route
+        '/veterinarians': (context) =>
+            Veterinarians(), // Define the '/beterinarians' route
       },
     );
   }

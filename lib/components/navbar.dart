@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:petpal/pages/home_page.dart';
-import 'package:petpal/pages/alerts.dart';
-import 'package:petpal/pages/veterinarians.dart';
 
 class NavbarPage extends StatelessWidget {
   @override
@@ -19,21 +16,10 @@ class NavbarPage extends StatelessWidget {
             gap: 8,
             padding: EdgeInsets.all(16),
             tabs: [
-              GButton(
-                icon: Icons.home,
-                text: "Home",
-                onPressed: () => _navigateToPage(context, HomePage()),
-              ),
-              GButton(
-                icon: Icons.add_alert,
-                text: "Alerts",
-                onPressed: () => _navigateToPage(context, AlertsPage()),
-              ),
-              GButton(
-                icon: Icons.add_location,
-                text: "Veterinarians",
-                onPressed: () => _navigateToPage(context, Veterinarians()),
-              ),
+              _buildTab(Icons.home, "Home", '/home', context),
+              _buildTab(Icons.add_alert, "Alerts", '/alerts', context),
+              _buildTab(Icons.add_location, "Veterinarians", '/veterinarians',
+                  context),
             ],
           ),
         ),
@@ -41,16 +27,19 @@ class NavbarPage extends StatelessWidget {
     );
   }
 
-  void _navigateToPage(BuildContext context, Widget page) {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => page,
-      ),
+  // Helper method to create a GButton for a tab
+  GButton _buildTab(
+      IconData icon, String text, String routeName, BuildContext context) {
+    return GButton(
+      icon: icon,
+      text: text,
+      onPressed: () {
+        Navigator.of(context).pushReplacementNamed(routeName);
+      },
     );
   }
 
   Widget _getPage() {
-    // Depending on your use case, you may want to initialize the default page here.
     // Example: return HomePage();
     return Container();
   }

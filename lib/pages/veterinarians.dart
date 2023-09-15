@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-
+import 'package:petpal/main.dart';
 
 class Veterinarians extends StatefulWidget {
   const Veterinarians({super.key});
@@ -69,7 +69,12 @@ class VeterinariansState extends State<Veterinarians> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.lightBlueAccent,
-        //actions: [IconButton(onPressed: signUserOut, icon: Icon(Icons.logout))],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back), // Use your back icon here
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, '/home');
+          },
+        ),
         title: Text("Veterinarians"),
       ),
       body: Container(
