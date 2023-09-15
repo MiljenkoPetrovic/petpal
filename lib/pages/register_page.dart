@@ -4,33 +4,19 @@ import 'package:petpal/components/my_button.dart';
 import 'package:petpal/components/my_textfield.dart';
 
 class RegisterPage extends StatefulWidget {
-  final Function()? onTap;
-  const RegisterPage({super.key, required this.onTap});
+  final VoidCallback onTap; // Callback to toggle to LoginPage
+  const RegisterPage({Key? key, required this.onTap}) : super(key: key);
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  // text editing controllers
-  final emailController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
 
-  final passwordController = TextEditingController();
-
-  final confirmPasswordController = TextEditingController();
-
-  // sign user in method
-  void signUserUp() async {
-    //loading circle
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
-
+  Future<void> signUserUp() async {
     try {
       if (passwordController.text == confirmPasswordController.text) {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -38,36 +24,29 @@ class _RegisterPageState extends State<RegisterPage> {
           password: passwordController.text,
         );
       } else {
-        //show error
-        Navigator.pop(context);
         showErrorMessage("Passwords don't match!");
       }
-      Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
-      Navigator.pop(context);
       showErrorMessage(e.code);
     }
   }
 
-//error message
-
-void showErrorMessage(String message){
-  showDialog(
-    context: context, 
-    builder: (context) {
-      return AlertDialog(
-        backgroundColor: Colors.deepPurple,
-        title: Center(
-          child: Text(
-            message,
-            style: const TextStyle(color: Colors.white),
+  void showErrorMessage(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.deepPurple,
+          title: Center(
+            child: Text(
+              message,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
-
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +60,7 @@ void showErrorMessage(String message){
               children: [
                 const SizedBox(height: 50),
 
-                // logo
+                // Logo
                 const ImageIcon(
                   AssetImage("lib/images/logo.png"),
                   size: 100,
@@ -89,7 +68,7 @@ void showErrorMessage(String message){
 
                 const SizedBox(height: 50),
 
-                // Create an accout!
+                // Create an account!
                 Text(
                   'Create an account here!',
                   style: TextStyle(
@@ -100,7 +79,7 @@ void showErrorMessage(String message){
 
                 const SizedBox(height: 25),
 
-                // username textfield
+                // Username textfield
                 MyTextField(
                   controller: emailController,
                   hintText: 'Email',
@@ -109,7 +88,7 @@ void showErrorMessage(String message){
 
                 const SizedBox(height: 10),
 
-                // password textfield
+                // Password textfield
                 MyTextField(
                   controller: passwordController,
                   hintText: 'Password',
@@ -118,7 +97,7 @@ void showErrorMessage(String message){
 
                 const SizedBox(height: 10),
 
-                // confirm password textfield
+                // Confirm password textfield
                 MyTextField(
                   controller: confirmPasswordController,
                   hintText: 'Confirm Password',
@@ -127,7 +106,7 @@ void showErrorMessage(String message){
 
                 const SizedBox(height: 25),
 
-                // sign up button
+                // Sign up button
                 MyButton(
                   text: "Sign Up",
                   onTap: signUserUp,
@@ -135,7 +114,7 @@ void showErrorMessage(String message){
 
                 const SizedBox(height: 50),
 
-                // not a member? register now
+                // Not a member? Login now
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
+
 class Veterinarians extends StatefulWidget {
   const Veterinarians({super.key});
 
@@ -67,8 +68,8 @@ class VeterinariansState extends State<Veterinarians> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF0F9D58),
-        // on below line we have given title of app
+        backgroundColor: Colors.lightBlueAccent,
+        //actions: [IconButton(onPressed: signUserOut, icon: Icon(Icons.logout))],
         title: Text("Veterinarians"),
       ),
       body: Container(

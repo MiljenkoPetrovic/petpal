@@ -1,71 +1,83 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petpal/components/my_button.dart';
 import 'package:petpal/components/my_textfield.dart';
 
-class LoginPage extends StatefulWidget {
-  final Function()? onTap;
-  const LoginPage({super.key, required this.onTap});
+class LoginPage extends StatelessWidget {
+  final VoidCallback onTap; // Callback to navigate to RegisterPage
+  LoginPage({Key? key, required this.onTap}) : super(key: key);
 
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
-class _LoginPageState extends State<LoginPage> {
-  // text editing controllers
-  final emailController = TextEditingController();
-
-  final passwordController = TextEditingController();
-
-  // sign user in method
-  void signUserIn() async {
-    //loading circle
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
-
+  Future<void> signUserIn(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text, password: passwordController.text);
-      Navigator.pop(context);
+        email: emailController.text,
+        password: passwordController.text,
+      );
+      // Successful sign-in
+      print("User signed in successfully.");
     } on FirebaseAuthException catch (e) {
-      Navigator.pop(context);
+      print("Sign-in error: ${e.message}");
       if (e.code == 'user-not-found') {
-        //error msg
-        wrongEmailMessage();
+        wrongEmailMessage(context);
       } else if (e.code == 'wrong-password') {
-        //errror msg
-        wrongPasswordMessage();
+        wrongPasswordMessage(context);
+      } else {
+        // Handle other authentication errors
+        _showErrorDialog(context, 'Sign-In Error', e.message);
       }
     }
   }
 
-//wrong email
-
-  void wrongEmailMessage() {
+  void wrongEmailMessage(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
-        return const AlertDialog(
+        return AlertDialog(
           title: Text('Incorrect Email'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK'),
+            ),
+          ],
         );
       },
     );
   }
 
-//wrong pw
-
-  void wrongPasswordMessage() {
+  void wrongPasswordMessage(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
-        return const AlertDialog(
+        return AlertDialog(
           title: Text('Incorrect Password'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showErrorDialog(BuildContext context, String title, String? message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message ?? 'An error occurred.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK'),
+            ),
+          ],
         );
       },
     );
@@ -75,6 +87,9 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue[100],
+      appBar: AppBar(
+        title: Text('Login'),
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -82,13 +97,7 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
-
-                // logo
-                Image.network("https://w7.pngwing.com/pngs/548/122/png-transparent-dog-paw-cat-logo-dog-animals-poster-paw-thumbnail.png"),
-
-                const SizedBox(height: 50),
-
-                // welcome back, you've been missed!
+                // Welcome back, you've been missed!
                 Text(
                   'Welcome back you\'ve been missed!',
                   style: TextStyle(
@@ -96,28 +105,22 @@ class _LoginPageState extends State<LoginPage> {
                     fontSize: 16,
                   ),
                 ),
-
                 const SizedBox(height: 25),
-
-                // username textfield
+                // Username textfield
                 MyTextField(
                   controller: emailController,
                   hintText: 'Email',
                   obscureText: false,
                 ),
-
                 const SizedBox(height: 10),
-
-                // password textfield
+                // Password textfield
                 MyTextField(
                   controller: passwordController,
                   hintText: 'Password',
                   obscureText: true,
                 ),
-
                 const SizedBox(height: 10),
-
-                // forgot password?
+                // Forgot password?
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Row(
@@ -130,18 +133,14 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 25),
-
-                // sign in button
+                // Sign in button
                 MyButton(
                   text: "Sign In",
-                  onTap: signUserIn,
+                  onTap: () => signUserIn(context),
                 ),
-
                 const SizedBox(height: 50),
-
-                // not a member? register now
+                // Not a member? Register now
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -150,16 +149,17 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(color: Colors.grey[700]),
                     ),
                     const SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: widget.onTap,
-                      child: const Text(
-                        'Register now',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
+                    if (onTap != null) // Check if onTap is not null
+                      GestureDetector(
+                        onTap: onTap,
+                        child: const Text(
+                          'Register now',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 )
               ],
