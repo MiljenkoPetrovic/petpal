@@ -10,7 +10,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Clear the user's authentication state
-  await FirebaseAuth.instance.signOut();
+  try {
+    await FirebaseAuth.instance.signOut();
+    // Proceed with any additional logic after sign-out
+  } catch (e) {
+    print("Error signing out: $e");
+  }
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -24,8 +29,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute:
-          '/login_or_register', // Set the initial route to '/login_or_register'
+      initialRoute: '/', // Set the initial route to '/login_or_register'
       routes: {
         '/': (context) => AuthPage(), // Define the '/auth' route for AuthPage
         '/home': (context) =>
