@@ -46,12 +46,12 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.logout),
           )
         ],
-        title: Text("Home"),
+        title: Text("PetPal"),
       ),
       body: _pages[_currentIndex], // Ensure _currentIndex is within valid range
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color.fromARGB(255, 2, 80, 110),
-        fixedColor: Colors.lightBlueAccent,
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.lightBlueAccent,
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {

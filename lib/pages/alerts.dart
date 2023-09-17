@@ -28,16 +28,6 @@ class _AlertsPageState extends State<AlertsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.lightBlueAccent,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back), // Use your back icon here
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, '/home');
-          },
-        ),
-        title: Text("Alerts"),
-      ),
       body: Column(
         children: [
           Padding(

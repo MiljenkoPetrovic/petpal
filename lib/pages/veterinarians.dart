@@ -97,16 +97,6 @@ class _VeterinariansState extends State<Veterinarians> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.lightBlueAccent,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back), // Use your back icon here
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, '/home');
-          },
-        ),
-        title: Text("Veterinarians"),
-      ),
       body: GoogleMap(
         initialCameraPosition: CameraPosition(
           target: LatLng(

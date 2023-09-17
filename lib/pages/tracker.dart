@@ -44,16 +44,6 @@ class _TrackerPageState extends State<TrackerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.lightBlueAccent,
-        actions: [
-          IconButton(
-            onPressed: () => signUserOut(context),
-            icon: Icon(Icons.logout),
-          )
-        ],
-        title: Text("Tracker"),
-      ),
       body: Column(
         children: [
           Container(
