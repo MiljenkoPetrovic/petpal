@@ -96,4 +96,4 @@ class HomeContent extends StatelessWidget {
   }
 }
 
-// Define other pages similarly to TrackerPage, AlertsPage, and VeterinariansPage
+

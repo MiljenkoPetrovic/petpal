@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:petpal/pages/login_or_register.dart';
@@ -10,9 +9,7 @@ import 'package:path/path.dart' as path;
 
 class TrackerPage extends StatefulWidget {
   final FirebaseStorage storage;
-
   const TrackerPage({Key? key, required this.storage}) : super(key: key);
-
   @override
   _TrackerPageState createState() => _TrackerPageState();
 }
@@ -23,16 +20,13 @@ class _TrackerPageState extends State<TrackerPage> {
   final ImagePicker _imagePicker = ImagePicker();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  List<DateTime> _dateList = [];
-  bool _allPetsFed = false;
-  bool _allPetsWalked = false;
-  List<QueryDocumentSnapshot> petDocs = []; // Declare petDocs here
+  List<QueryDocumentSnapshot> petDocs = [];
+  bool allPetsFedAndWalked = false; // Moved the variable here
 
   @override
   void initState() {
     super.initState();
-    _dateList = generateDateList();
+    _loadPetData(); // Load data when the page is initialized
   }
 
   @override
@@ -55,6 +49,7 @@ class _TrackerPageState extends State<TrackerPage> {
                   return CircularProgressIndicator();
                 }
                 petDocs = snapshot.data!.docs; // Assign the value here
+
                 final petWidgets =
                     petDocs.map((petDoc) => _buildPetWidget(petDoc)).toList();
                 return ListView(
@@ -64,33 +59,6 @@ class _TrackerPageState extends State<TrackerPage> {
             ),
           ),
           SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              ElevatedButton(
-                onPressed: () => _updateDatesManually(),
-                child: Text("Manual Update"),
-              ),
-              Text("All Pets Fed:"),
-              Checkbox(
-                value: _allPetsFed,
-                onChanged: (value) {
-                  _updateAllPetsFed(value ?? false);
-                },
-              ),
-              Text("All Pets Walked:"),
-              Checkbox(
-                value: _allPetsWalked,
-                onChanged: (value) {
-                  _updateAllPetsWalked(value ?? false);
-                },
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: buildDateContainers(petDocs),
-          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -106,6 +74,23 @@ class _TrackerPageState extends State<TrackerPage> {
     final petImageUrl = petData['imageUrl'] as String;
     final petFed = petData['fed'] as bool;
     final petWalked = petData['walked'] as bool;
+
+    void _deletePet() {
+      final user = _auth.currentUser;
+      if (user != null) {
+        _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('pets')
+            .doc(petDoc.id)
+            .delete()
+            .then((_) {
+          print("Pet deleted successfully.");
+        }).catchError((error) {
+          print("Error deleting pet: $error");
+        });
+      }
+    }
 
     return ListTile(
       leading: Image.network(petImageUrl),
@@ -136,6 +121,35 @@ class _TrackerPageState extends State<TrackerPage> {
             ],
           ),
         ],
+      ),
+      trailing: IconButton(
+        icon: Icon(Icons.delete),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Delete Pet"),
+                content: Text("Are you sure you want to delete this pet?"),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Cancel"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      _deletePet();
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Delete"),
+                  ),
+                ],
+              );
+            },
+          );
+        },
       ),
       onTap: () => _showUpdatePetDialog(context, petDoc.id, petData),
     );
@@ -263,64 +277,13 @@ class _TrackerPageState extends State<TrackerPage> {
 
   Stream<QuerySnapshot> _getPetData() {
     final user = _auth.currentUser;
-    return _firestore
+    final stream = _firestore
         .collection('users')
         .doc(user!.uid)
         .collection('pets')
         .snapshots();
-  }
 
-  List<Widget> buildDateContainers(List<QueryDocumentSnapshot>? petDocs) {
-    final dates = generateDateList();
-    final dateWidgets = <Widget>[];
-
-    if (petDocs != null) {
-      for (final date in dates) {
-        final formattedDate = DateFormat('MMM dd').format(date);
-        final petsOnDate = petDocs.where((doc) {
-          final petData = doc.data() as Map<String, dynamic>;
-          final petFed = petData['fed'] as bool;
-          final petWalked = petData['walked'] as bool;
-          final petDate = petData['date'] as Timestamp?;
-
-          // Check if petDate is not null before accessing it
-          if (petDate != null) {
-            final petDateTime = petDate.toDate();
-            return petDateTime.year == date.year &&
-                petDateTime.month == date.month &&
-                petDateTime.day == date.day &&
-                petFed &&
-                petWalked;
-          }
-
-          // Handle the case where petDate is null
-          return false;
-        });
-
-        final isAllPetsFedAndWalked = petsOnDate.length == petDocs.length;
-
-        dateWidgets.add(
-          Container(
-            width: 80,
-            height: 60,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: isAllPetsFedAndWalked ? Colors.green : Colors.blue,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              formattedDate,
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        );
-      }
-    }
-
-    return dateWidgets;
+    return stream;
   }
 
   Future<void> _addPet() async {
@@ -416,36 +379,6 @@ class _TrackerPageState extends State<TrackerPage> {
     }
   }
 
-  void _updateDatesManually() {
-    setState(() {
-      _dateList = generateDateList();
-    });
-  }
-
-  void _updateAllPetsFed(bool fed) {
-    setState(() {
-      _allPetsFed = fed;
-    });
-  }
-
-  void _updateAllPetsWalked(bool walked) {
-    setState(() {
-      _allPetsWalked = walked;
-    });
-  }
-
-  List<DateTime> generateDateList() {
-    final today = DateTime.now();
-    final dates = <DateTime>[];
-
-    for (int i = -2; i <= 2; i++) {
-      final date = today.add(Duration(days: i));
-      dates.add(date);
-    }
-
-    return dates;
-  }
-
   void signUserOut(BuildContext context) async {
     await _auth.signOut();
     Navigator.of(context).pushReplacement(
@@ -454,11 +387,29 @@ class _TrackerPageState extends State<TrackerPage> {
       ),
     );
   }
-}
 
-void main() {
-  final FirebaseStorage storage = FirebaseStorage.instance;
-  runApp(MaterialApp(
-    home: TrackerPage(storage: storage),
-  ));
+  Future<void> _loadPetData() async {
+    try {
+      final snapshot = await _getPetData().first;
+      if (snapshot.docs.isNotEmpty) {
+        setState(() {
+          petDocs = snapshot.docs;
+        });
+
+        // Print the data from loaded documents
+        for (final doc in snapshot.docs) {
+          final petData = doc.data() as Map<String, dynamic>;
+          print('Pet Name: ${petData['name']}');
+          print('Image URL: ${petData['imageUrl']}');
+          print('Fed: ${petData['fed']}');
+          print('Walked: ${petData['walked']}');
+          print('---'); // Separate each pet's data
+        }
+      } else {
+        print('No data available in Firestore');
+      }
+    } catch (e) {
+      print('Error loading data from Firestore: $e');
+    }
+  }
 }
