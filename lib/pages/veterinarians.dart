@@ -40,7 +40,7 @@ class _VeterinariansState extends State<Veterinarians> {
     }
 
     if (permission == LocationPermission.deniedForever) {
-      // Permission permanently denied, handle accordingly
+      // Permission permanently denied
       return;
     }
 

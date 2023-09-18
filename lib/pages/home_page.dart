@@ -26,6 +26,7 @@ class _HomePageState extends State<HomePage> {
     Veterinarians(),
   ];
 
+  // Function to sign the user out and navigate to the login or register page
   void signUserOut(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
     Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -48,7 +49,8 @@ class _HomePageState extends State<HomePage> {
         ],
         title: Text("PetPal"),
       ),
-      body: _pages[_currentIndex], // Ensure _currentIndex is within valid range
+      body:
+          _pages[_currentIndex], // Ensure _currentIndex is within a valid range
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.lightBlueAccent,
@@ -57,8 +59,6 @@ class _HomePageState extends State<HomePage> {
           setState(() {
             _currentIndex = index;
           });
-
-          // No need for Navigator on the web, just update the index
         },
         items: [
           BottomNavigationBarItem(
@@ -95,5 +95,3 @@ class HomeContent extends StatelessWidget {
     );
   }
 }
-
-

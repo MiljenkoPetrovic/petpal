@@ -15,18 +15,18 @@ class TrackerPage extends StatefulWidget {
 }
 
 class _TrackerPageState extends State<TrackerPage> {
+  // Initialize controllers, variables, and instances
   final TextEditingController _petNameController = TextEditingController();
   String? _selectedImage;
   final ImagePicker _imagePicker = ImagePicker();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<QueryDocumentSnapshot> petDocs = [];
-  bool allPetsFedAndWalked = false; // Moved the variable here
 
   @override
   void initState() {
     super.initState();
-    _loadPetData(); // Load data when the page is initialized
+    _loadPetData(); // Load pet data when the page is initialized.
   }
 
   @override
@@ -48,7 +48,7 @@ class _TrackerPageState extends State<TrackerPage> {
                 if (!snapshot.hasData) {
                   return CircularProgressIndicator();
                 }
-                petDocs = snapshot.data!.docs; // Assign the value here
+                petDocs = snapshot.data!.docs; // Store the pet data.
 
                 final petWidgets =
                     petDocs.map((petDoc) => _buildPetWidget(petDoc)).toList();
@@ -68,6 +68,7 @@ class _TrackerPageState extends State<TrackerPage> {
     );
   }
 
+  // Build a widget to display pet information
   Widget _buildPetWidget(QueryDocumentSnapshot<Object?> petDoc) {
     final petData = petDoc.data() as Map<String, dynamic>;
     final petName = petData['name'] as String;
@@ -155,6 +156,7 @@ class _TrackerPageState extends State<TrackerPage> {
     );
   }
 
+  // Show a dialog to add a new pet
   void _showAddPetDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -201,6 +203,7 @@ class _TrackerPageState extends State<TrackerPage> {
     );
   }
 
+  // Show a dialog to update pet data
   void _showUpdatePetDialog(
       BuildContext context, String petId, Map<String, dynamic> petData) {
     showDialog(
@@ -263,6 +266,7 @@ class _TrackerPageState extends State<TrackerPage> {
     );
   }
 
+  // Take a picture using the device's camera
   void _takePicture(BuildContext context) async {
     final imagePickerResponse = await _imagePicker.pickImage(
       source: ImageSource.camera,
@@ -275,6 +279,7 @@ class _TrackerPageState extends State<TrackerPage> {
     }
   }
 
+  // Retrieve pet data from Firestore
   Stream<QuerySnapshot> _getPetData() {
     final user = _auth.currentUser;
     final stream = _firestore
@@ -286,6 +291,7 @@ class _TrackerPageState extends State<TrackerPage> {
     return stream;
   }
 
+  // Add a new pet to Firestore
   Future<void> _addPet() async {
     final user = _auth.currentUser;
     final petData = {
@@ -328,6 +334,7 @@ class _TrackerPageState extends State<TrackerPage> {
     }
   }
 
+  // Update pet data in Firestore
   Future<void> _updatePet(String petId, String fed, String walked) async {
     final user = _auth.currentUser;
 
@@ -347,6 +354,7 @@ class _TrackerPageState extends State<TrackerPage> {
     }
   }
 
+  // Update the fed status of a pet in Firestore
   Future<void> _updatePetFed(String petId, bool fed) async {
     final user = _auth.currentUser;
 
@@ -363,6 +371,7 @@ class _TrackerPageState extends State<TrackerPage> {
     }
   }
 
+  // Update the walked status of a pet in Firestore
   Future<void> _updatePetWalked(String petId, bool walked) async {
     final user = _auth.currentUser;
 
@@ -379,6 +388,7 @@ class _TrackerPageState extends State<TrackerPage> {
     }
   }
 
+  // Sign the user out and navigate to the login or register page
   void signUserOut(BuildContext context) async {
     await _auth.signOut();
     Navigator.of(context).pushReplacement(
@@ -388,6 +398,7 @@ class _TrackerPageState extends State<TrackerPage> {
     );
   }
 
+  // Load pet data from Firestore
   Future<void> _loadPetData() async {
     try {
       final snapshot = await _getPetData().first;
@@ -396,14 +407,13 @@ class _TrackerPageState extends State<TrackerPage> {
           petDocs = snapshot.docs;
         });
 
-        // Print the data from loaded documents
         for (final doc in snapshot.docs) {
           final petData = doc.data() as Map<String, dynamic>;
           print('Pet Name: ${petData['name']}');
           print('Image URL: ${petData['imageUrl']}');
           print('Fed: ${petData['fed']}');
           print('Walked: ${petData['walked']}');
-          print('---'); // Separate each pet's data
+          print('---');
         }
       } else {
         print('No data available in Firestore');
