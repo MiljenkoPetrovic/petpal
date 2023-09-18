@@ -25,6 +25,25 @@ class _VeterinariansState extends State<Veterinarians> {
   }
 
   Future<void> getUserLocation() async {
+    // Check if location services are enabled
+    if (!await Geolocator.isLocationServiceEnabled()) {
+      // Location services are disabled, handle accordingly
+      return;
+    }
+
+    // Request permission
+    final permission = await Geolocator.requestPermission();
+
+    if (permission == LocationPermission.denied) {
+      // Permission denied, handle accordingly
+      return;
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permission permanently denied, handle accordingly
+      return;
+    }
+
     final Position position = await Geolocator.getCurrentPosition();
 
     setState(() {
@@ -99,8 +118,9 @@ class _VeterinariansState extends State<Veterinarians> {
     return Scaffold(
       body: GoogleMap(
         initialCameraPosition: CameraPosition(
-          target: LatLng(
-              0, 0), // Default to (0,0) until we get the user's location.
+          target: _userLocation ??
+              LatLng(
+                  0, 0), // Default to (0,0) until we get the user's location.
           zoom: 14,
         ),
         markers: _markers,
